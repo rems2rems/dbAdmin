@@ -10,7 +10,7 @@ module.exports =
             port : 5984
             auth:
                 username: 'admin'
-                password: 'c0uchAdm1n'
+                password: 'enter admin password here'
             name : 'la_mine_dev'
             #apiary_name : 'remy-rucher-1'
             apiary_name : 'la_mine_rucher_01'
@@ -23,7 +23,7 @@ module.exports =
             port : 5984
             auth:
                 username: 'admin'
-                password: 'c0uchAdm1n'
+                password: 'enter admin password here'
             name : 'la_mine'
 
         replicationInterval :
