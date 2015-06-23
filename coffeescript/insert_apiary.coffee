@@ -21,4 +21,13 @@ module.exports = (db,location,callback)->
 
                             ).toString().replace("id_placeholder",apiary._id)
 
+                    beehouses :
+
+                        map : ((doc)-> 
+                            if doc.type is "beehouse" and doc.apiary_id is "id_placeholder"
+                                
+                                emit(doc._id, doc)
+
+                            ).toString().replace("id_placeholder",apiary._id)
+
             db.save view, callback
