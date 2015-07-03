@@ -18,42 +18,41 @@ create_database = require './create_database'
 #createViews = require '../../dbUtil/javascript/create_views'
 insert_location = require './insert_location'
 insert_apiary = require './insert_apiary'
-insert_beehouse = require './insert_beehouse'
-insert_sensor = require './insert_sensor'
+# insert_beehouse = require './insert_beehouse'
+# insert_sensor = require './insert_sensor'
 
-create_database (db)->
+create_database().then (db)->
     
     console.log "database created."
+    return db
 
-    insert_location db, (err,location)=>
+.then (db)->
 
-        if err?
-            console.log err
-            return
+    insert_location(db).then (location)->
 
         console.log "location created."
         
         insert_apiary db,location, (err,apiary)=>
 
-            if err?
-                console.log err
-                return
+        #     if err?
+        #         console.log err
+        #         return
 
-            console.log "apiary created."
+        #     console.log "apiary created."
             
-            insert_beehouse db,apiary,(err,beehouse)=>
+        #     insert_beehouse db,apiary,(err,beehouse)=>
 
 
-                if err?
-                    console.log err
-                    return
+        #         if err?
+        #             console.log err
+        #             return
 
-                console.log "beehouse created."
+        #         console.log "beehouse created."
                 
-                insert_sensor db,beehouse,(err,sensor)=>
+        #         insert_sensor db,beehouse,(err,sensor)=>
 
-                    if err?
-                        console.log err
-                        return
+        #             if err?
+        #                 console.log err
+        #                 return
 
-                    console.log "sensor created."
+        #             console.log "sensor created."

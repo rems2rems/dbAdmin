@@ -14,16 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenBeeLab.  If not, see <http://www.gnu.org/licenses/>.
 
+Promise = require 'promise'
+
 dbConfig = require './config'
 
 
-dbDriver = require('../../dbUtil/javascript/dbUtil').configuredDriver(dbConfig.databases.local)
-create_database = require '../../dbUtil/javascript/create_database'
+dbDriver = require('../../openbeelab-db-util/javascript/dbUtil').configuredDriver(dbConfig.databases.local)
+
+create_database = require '../../openbeelab-db-util/javascript/create_database'
 prompt = require 'prompt'
 
-module.exports = (callback)->
-    prompt.start()
-    prompt.get ['db_name'],(err,result)=>
-        
-        db = create_database dbDriver,result.db_name
-        callback(db)
+module.exports = ()->
+    
+    return new Promise((fulfill,reject)->
+        prompt.start()
+        prompt.get ['db_name'],(err,result)=>
+            if(err)
+                reject(err)
+
+            create_database(dbDriver,result.db_name).then(fulfill)
+    )
