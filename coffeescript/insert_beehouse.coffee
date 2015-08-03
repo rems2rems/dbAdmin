@@ -1,5 +1,6 @@
 prompt = require 'prompt'
 insert_beehouse = require '../../openbeelab-db-util/javascript/insert_beehouse'
+Promise = require 'promise'
 
 module.exports = (db,apiary,callback)->
 

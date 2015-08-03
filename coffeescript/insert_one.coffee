@@ -1,5 +1,5 @@
 dbConfig = require './config'
-db = require('../../dbUtil/javascript/dbUtil').database(dbConfig.databases.local.db)
+db = require('../../openbeelab-db-util/javascript/dbUtil').database(dbConfig.databases.local.db)
 
 prompt = require 'prompt'
 

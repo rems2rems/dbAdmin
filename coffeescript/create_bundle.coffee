@@ -32,27 +32,18 @@ create_database().then (db)->
 
         console.log "location created."
         
-        insert_apiary db,location, (err,apiary)=>
+        insert_apiary db,location, (apiary)=>
 
-        #     if err?
-        #         console.log err
-        #         return
-
-        #     console.log "apiary created."
+            console.log "apiary created."
             
-        #     insert_beehouse db,apiary,(err,beehouse)=>
+            insert_beehouse db,apiary,(beehouse)=>
 
-
-        #         if err?
-        #             console.log err
-        #             return
-
-        #         console.log "beehouse created."
+                console.log "beehouse created."
                 
-        #         insert_sensor db,beehouse,(err,sensor)=>
+                insert_sensor db,beehouse,(sensor)=>
 
-        #             if err?
-        #                 console.log err
-        #                 return
+                    console.log "sensor created."
 
-        #             console.log "sensor created."
+.catch (err)->
+
+    console.log err

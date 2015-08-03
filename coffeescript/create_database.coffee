@@ -15,14 +15,16 @@
 # along with OpenBeeLab.  If not, see <http://www.gnu.org/licenses/>.
 
 Promise = require 'promise'
+prompt = require 'prompt'
 
 dbConfig = require './config'
+create_database = require '../../openbeelab-db-util/javascript/create_database'
 
-
+promisify_db = require '../../openbeelab-db-util/javascript/promisify_cradle'
 dbDriver = require('../../openbeelab-db-util/javascript/dbUtil').configuredDriver(dbConfig.databases.local)
 
-create_database = require '../../openbeelab-db-util/javascript/create_database'
-prompt = require 'prompt'
+usersDb = dbDriver.database("_users")
+usersDb = promisify_db(usersDb)
 
 module.exports = ()->
     
@@ -32,5 +34,8 @@ module.exports = ()->
             if(err)
                 reject(err)
 
-            create_database(dbDriver,result.db_name).then(fulfill)
+            db = dbDriver.database(result.db_name)
+            db = promisify_db(db)
+
+            create_database(usersDb,db,result.db_name).then(fulfill,reject)
     )

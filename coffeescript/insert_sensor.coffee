@@ -1,9 +1,16 @@
 prompt = require 'prompt'
-insert_sensor = require '../../dbUtil/javascript/insert_sensor'
+insert_sensor = require '../../openbeelab-db-util/javascript/insert_sensor'
+Promise = require 'promise'
 
-module.exports = (db,beehouse,callback)->
+module.exports = (db,beehouse)->
 
-    prompt.start()
-    prompt.get ['pcduinopin','bias','gain','sensor_name','unit'],(err,result)=>
-        
-        insert_sensor db,beehouse,parseInt(result.pcduinopin),parseInt(result.bias),parseFloat(result.gain),result.sensor_name,result.unit,callback
+    return new Promise((fulfill,reject)->
+    	prompt.start()
+	    prompt.get ['device','measureType','pin','bias','gain','sensor_name','unit'],(err,result)=>
+	        
+	        if err?
+	        	reject(err)
+	        
+	        promise = insert_sensor db,beehouse,result.device,result.measureType,parseInt(result.pin),parseInt(result.bias),parseFloat(result.gain),result.sensor_name,result.unit
+	        promise.then fulfill
+	)

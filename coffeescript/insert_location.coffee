@@ -1,5 +1,6 @@
 prompt = require 'prompt'
 insert_location = require '../../openbeelab-db-util/javascript/insert_location'
+Promise = require 'promise'
 
 module.exports = (db)->
 
@@ -9,5 +10,5 @@ module.exports = (db)->
             if(err)
                 reject(err)
 
-            return insert_location(db,result.location_name).then(fulfill)
+            insert_location(db,result.location_name).then(fulfill,reject)
     )
