@@ -14,36 +14,63 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenBeeLab.  If not, see <http://www.gnu.org/licenses/>.
 
-create_database = require './create_database'
-#createViews = require '../../dbUtil/javascript/create_views'
-insert_location = require './insert_location'
-insert_apiary = require './insert_apiary'
-# insert_beehouse = require './insert_beehouse'
-# insert_sensor = require './insert_sensor'
+# create_database = require './create_database'
 
-create_database().then (db)->
+create_database = require '../../openbeelab-db-util/javascript/create_database'
+insert_location = require '../../openbeelab-db-util/javascript/insert_location'
+insert_apiary = require '../../openbeelab-db-util/javascript/insert_apiary'
+insert_stand = require '../../openbeelab-db-util/javascript/insert_stand'
+insert_beehouse = require '../../openbeelab-db-util/javascript/insert_beehouse'
+
+config = require './config'
+
+dbDriver = require('../../openbeelab-db-util/javascript/dbUtil').configuredDriver(config.databases.local)
+promisify_db = require '../../openbeelab-db-util/javascript/promisify_cradle'
+
+dbName = config.databases.local.name
+
+usersDb = dbDriver.database("_users")
+usersDb = promisify_db(usersDb)
+db = dbDriver.database(dbName)
+db = promisify_db(db)
+
+create_database(usersDb,db,dbName)
+.then (db)->
     
     console.log "database created."
     return db
 
 .then (db)->
+    
+    location = config.databases.local.location
+    insert_location(db,location)
 
-    insert_location(db).then (location)->
+.then ([db,location])->
 
-        console.log "location created."
-        
-        insert_apiary db,location, (apiary)=>
+    console.log "location created."
+    
+    apiaryName = config.databases.local.apiary_name
+    insert_apiary(db,location,apiaryName)
 
-            console.log "apiary created."
-            
-            insert_beehouse db,apiary,(beehouse)=>
+.then ([db,apiary])->
 
-                console.log "beehouse created."
-                
-                insert_sensor db,beehouse,(sensor)=>
+    console.log "apiary created."
+    # return apiary
 
-                    console.log "sensor created."
+    beehouseName = config.databases.local.beehouse.name
+    model = config.databases.local.beehouse.model
+    insert_beehouse(db,apiary,model,beehouseName)
 
+.then ([db,apiary,beehouse])->
+
+    console.log "beehouse created."
+    stand = config.databases.local.stand
+    insert_stand(db,stand,apiary,beehouse)
+    
+.then ->
+
+    console.log "stand created."
+    
 .catch (err)->
 
     console.log err
