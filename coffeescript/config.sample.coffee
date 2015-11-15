@@ -5,34 +5,46 @@ module.exports =
         local :
 
             host : 'dev.openbeelab.org'
+            #host : 'localhost'
             protocol : 'http'
             port : 5984
             auth:
-                username: 'user_name'
-                password: 'user_pass'
-            name : 'db_name'
-            apiary_name : 'apiary_name'
+                username: 'admin'
+                password: 'xxx'
+            name : 'xxx'
+            apiary :
+                _id : "apiary:rucher_001"
+                name : "rucher_001"
+                type : "apiary"
+                location : { _id : "location:jbc", name : "jbc" }
             location :
-                name : "location_name"
+                _id : "location:jbc"
+                name : "jbc"
                 locationType : "GPS"
                 latitude : 43.301854
                 longitude : -0.399957
                 create_noised_area : true
                 noise : 0.0166666667 #degree = 1 minute
+            beehouse_model :
+                _id : "beehousemodel:dadant"
+                name : "dadant"
+                type : "beehousemodel"
+                model : "dadant"
+                weight :
+                    value : 37
+                    unit : "Kg"
+                extra_box_weight :
+                    value : 5
+                    unit : "Kg"
             beehouse :
-                name : 'ruche_name'
-                model :
-                    _id : "beehousemodel:dadant"
-                    name : "dadant"
-                    type : "beehousemodel"
-                    model : "dadant"
-                    weight :
-                        value : 37
-                        unit : "Kg"
-                    extra_box_weight :
-                        value : 5
-                        unit : "Kg"
+                _id : 'beehouse:ruche_001'
+                name : 'ruche_001'
+                model : { _id : "beehousemodel:dadant", name : "dadant" }
+                apiary : { _id : "apiary:rucher_001", name : "rucher_001" }
+                number_of_extra_boxes : 0
+                has_roof : true
             stand :
+                _id : "stand:socle_001"
                 name : "socle_001"
                 type : "stand"
                 device : "arietta_g25"
@@ -54,6 +66,11 @@ module.exports =
                     photoDiode1 : 'in_voltage0_raw'
                     photoDiode2 : 'in_voltage1_raw'
                 ]
+                sleepMode : true
+                sleepDuration : 3300
+                apiary : { _id : "apiary:rucher_001", name : "rucher_001" }
+                beehouse : { _id : "beehouse:ruche_001", name : "ruche_001" }
+                location : { _id : "location:jbc", name : "jbc" }
 
         # remote :
             
@@ -70,3 +87,6 @@ module.exports =
 
         #     value : 10
         #     unit : 'minutes'
+    
+    # external_sites:
+    #     - 'openweathermap'
