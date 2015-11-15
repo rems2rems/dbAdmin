@@ -33,6 +33,7 @@ usersDb = dbDriver.database("_users")
 usersDb = promisify_db(usersDb)
 db = dbDriver.database(dbName)
 db = promisify_db(db)
+Promise = require "promise"
 
 create_database(usersDb,db,dbName)
 .then (db)->
@@ -49,23 +50,29 @@ create_database(usersDb,db,dbName)
 
     console.log "location created."
     
-    apiaryName = config.databases.local.apiary_name
-    insert_apiary(db,location,apiaryName)
+    apiary = config.databases.local.apiary
+    db.save(apiary).then ->
+
+        return [db,apiary]
+    # insert_apiary(db,location,apiaryName)
 
 .then ([db,apiary])->
 
     console.log "apiary created."
     # return apiary
+    
+    p1 = db.save(config.databases.local.beehouse_model)
+    p2 = db.save(config.databases.local.beehouse)
 
-    beehouseName = config.databases.local.beehouse.name
-    model = config.databases.local.beehouse.model
-    insert_beehouse(db,apiary,model,beehouseName)
+    return Promise.all([p1,p2]).then ([model,beehouse])-> [db,apiary,beehouse]
+    # insert_beehouse(db,apiary,model,beehouseName)
 
 .then ([db,apiary,beehouse])->
 
     console.log "beehouse created."
     stand = config.databases.local.stand
-    insert_stand(db,stand,apiary,beehouse)
+    db.save stand
+    # insert_stand(db,stand,apiary,beehouse)
     
 .then ->
 
