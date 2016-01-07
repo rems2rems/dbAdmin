@@ -14,70 +14,76 @@
 # You should have received a copy of the GNU General Public License
 # along with OpenBeeLab.  If not, see <http://www.gnu.org/licenses/>.
 
-# create_database = require './create_database'
-
-create_database = require '../../openbeelab-db-util/javascript/create_database'
-insert_location = require '../../openbeelab-db-util/javascript/insert_location'
-insert_apiary = require '../../openbeelab-db-util/javascript/insert_apiary'
-insert_stand = require '../../openbeelab-db-util/javascript/insert_stand'
-insert_beehouse = require '../../openbeelab-db-util/javascript/insert_beehouse'
+insert_location = require './insert_location'
+insert_apiary = require './insert_apiary'
+insert_stand = require './insert_stand'
+insert_beehouse = require './insert_beehouse'
 
 config = require './config'
 
-dbDriver = require('../../openbeelab-db-util/javascript/dbUtil').configuredDriver(config.databases.local)
+dbDriver = require('../../openbeelab-db-util/javascript/dbUtil').configuredDriver(config.database)
 promisify_db = require '../../openbeelab-db-util/javascript/promisify_cradle'
 
-dbName = config.databases.local.name
+dbName = config.database.name
 
 usersDb = dbDriver.database("_users")
 usersDb = promisify_db(usersDb)
-db = dbDriver.database(dbName)
-db = promisify_db(db)
+configDbName = dbName + "_config"
+configDb = dbDriver.database(configDbName)
+configDb = promisify_db(configDb)
+dataDbName = dbName + "_data"
+dataDb = dbDriver.database(dataDbName)
+dataDb = promisify_db(dataDb)
 Promise = require "promise"
 
-create_database(usersDb,db,dbName)
-.then (db)->
+createViews = require './create_views'
+createUsers = require './create_users'
+
+configDb.create()
+.then ()->
+
+    createViews(configDb,"config")
+
+.then ()->
+
+    createUsers(usersDb,configDb,dbName)
+
+.then ()->
     
-    console.log "database created."
-    return db
+    console.log "config db created."
 
-.then (db)->
+.then ()->
     
-    location = config.databases.local.location
-    insert_location(db,location)
+    location = config.database.configObjects.location
+    insert_location(configDb,location)
 
-.then ([db,location])->
-
+.then ()->
+    
     console.log "location created."
-    
-    apiary = config.databases.local.apiary
-    db.save(apiary).then ->
+    p1 = configDb.save(config.database.configObjects.beehouse_model)
+    p2 = configDb.save(config.database.configObjects.beehouse)
 
-        return [db,apiary]
-    # insert_apiary(db,location,apiaryName)
+    return Promise.all([p1,p2])
 
-.then ([db,apiary])->
-
-    console.log "apiary created."
-    # return apiary
-    
-    p1 = db.save(config.databases.local.beehouse_model)
-    p2 = db.save(config.databases.local.beehouse)
-
-    return Promise.all([p1,p2]).then ([model,beehouse])-> [db,apiary,beehouse]
-    # insert_beehouse(db,apiary,model,beehouseName)
-
-.then ([db,apiary,beehouse])->
+.then ()->
 
     console.log "beehouse created."
-    stand = config.databases.local.stand
-    db.save stand
-    # insert_stand(db,stand,apiary,beehouse)
+    stand = config.database.configObjects.stand
+    configDb.save stand
     
-.then ->
+.then () ->
 
     console.log "stand created."
-    
+    dataDb.create()
+
+.then () ->
+
+    createViews(dataDb,"data")
+
+.then () ->
+
+    console.log "data db created."
+
 .catch (err)->
 
     console.log err

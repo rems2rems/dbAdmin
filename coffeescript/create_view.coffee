@@ -1,13 +1,11 @@
 
 dbConfig = require './config'
-db = require('../../dbUtil/javascript/dbUtil').database(dbConfig.databases.local)
+db = require('../../openbeelab-db-util/javascript/dbUtil').database(dbConfig.database)
 
-createView = require '../../dbUtil/javascript/create_view'
+view = require "./" + process.argv[2]
+console.log view
 
-viewPath = "../../dbUtil/javascript/views/"+process.argv[2]
-
-createView db,viewPath,(err,res)->
+db.save view
+.then (res)->
     
-    console.log err
     console.log res
-
