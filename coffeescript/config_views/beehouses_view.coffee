@@ -14,12 +14,6 @@ module.exports =
 
                 ).toString()
 
-        by_apiary :
-            map : ((doc)-> 
-                if doc.type == "beehouse" and doc.apiary_id?
-                    emit doc.apiary_id,doc
-                ).toString()
-
         by_location :
             map : ((doc)-> 
                 if doc.type == "beehouse" and doc.location_id?

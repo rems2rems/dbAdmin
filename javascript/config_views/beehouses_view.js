@@ -17,13 +17,6 @@
           }
         }).toString()
       },
-      by_apiary: {
-        map: (function(doc) {
-          if (doc.type === "beehouse" && (doc.apiary_id != null)) {
-            return emit(doc.apiary_id, doc);
-          }
-        }).toString()
-      },
       by_location: {
         map: (function(doc) {
           if (doc.type === "beehouse" && (doc.location_id != null)) {
