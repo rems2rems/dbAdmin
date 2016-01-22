@@ -6,44 +6,33 @@
 
   Promise = require('promise');
 
-  module.exports = function(usersDb, db, dbName) {
-    var adminPromise, dbAdmin, dbUploader, securityPromise, security_doc, uploaderPromise;
+  module.exports = function(usersDb, dbName) {
+    var adminPromise, all, dbAdmin, dbUploader, uploaderPromise;
     dbAdmin = {
       _id: 'org.couchdb.user:' + dbName + '_admin',
       type: "user",
       name: dbName + '_admin',
-      roles: [],
+      roles: [dbName + '/admin'],
       password: String.generateToken(6)
     };
-    console.log("dbAdmin login:" + dbAdmin.name);
-    console.log("dbAdmin password:" + dbAdmin.password);
     adminPromise = usersDb.save(dbAdmin);
     dbUploader = {
       _id: 'org.couchdb.user:' + dbName + '_uploader',
       type: "user",
       name: dbName + '_uploader',
-      roles: ["uploader"],
+      roles: [dbName + '/uploader'],
       password: String.generateToken(6)
     };
-    console.log("dbUploader login:" + dbUploader.name);
-    console.log("dbUploader password:" + dbUploader.password);
     uploaderPromise = usersDb.save(dbUploader);
-    security_doc = {
-      _id: '_security',
-      admins: {
-        names: [dbAdmin.name],
-        roles: []
-      },
-      members: {
-        names: [],
-        roles: []
-      }
-    };
-    securityPromise = Promise.all([adminPromise, uploaderPromise]);
-    securityPromise.then(function() {
-      return db.save(security_doc);
+    all = Promise.all([adminPromise, uploaderPromise]);
+    all.then(function() {
+      console.log("pouet");
+      return {
+        admin: dbAdmin,
+        uploader: dbUploader
+      };
     });
-    return securityPromise;
+    return all;
   };
 
 }).call(this);

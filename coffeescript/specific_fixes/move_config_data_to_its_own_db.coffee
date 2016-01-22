@@ -1,16 +1,16 @@
 objectUtils = require '../../openbeelab-util/javascript/objectUtils'
 objectUtils.install()
 
-dbDriver = require '../../openbeelab-db-util/javascript/dbUtil'
+dbDriver = require '../../openbeelab-db-util/javascript/dbDriver'
 dbConfig = require './config'
 
 dataCfg = dbConfig.database.clone()
 console.log dataCfg.name
-dataDb = dbDriver.database(dataCfg)
+dataDb = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name)
 
 configCfg = dbConfig.database.clone()
 configCfg.name += "_config"
-configDb = dbDriver.database(configCfg)
+configDb = dbDriver.useDb(configCfg)
 
 # dataDb.exists().then (exists)->
 #     console.log exists

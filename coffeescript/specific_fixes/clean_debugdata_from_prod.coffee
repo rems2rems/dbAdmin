@@ -1,6 +1,6 @@
-dbDriver = require '../../openbeelab-db-util/javascript/dbUtil'
+dbDriver = require '../../openbeelab-db-util/javascript/dbDriver'
 dbConfig = require './config'
-db = dbDriver.database(dbConfig.databases.local)
+db = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name)
 getWeekNumber = require('../../util/javascript/dateUtil').getWeekNumber
 
 measuresUrl = "_design/measures/_view/by_date?startkey=\"2014-12-29T05:15:00.000Z\"&limit=1" #&startkey=\"W30\"

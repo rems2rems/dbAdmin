@@ -6,7 +6,7 @@
 
   objectUtils.install();
 
-  dbDriver = require('../../openbeelab-db-util/javascript/dbUtil');
+  dbDriver = require('../../openbeelab-db-util/javascript/dbDriver');
 
   dbConfig = require('./config');
 
@@ -14,13 +14,13 @@
 
   console.log(dataCfg.name);
 
-  dataDb = dbDriver.database(dataCfg);
+  dataDb = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name);
 
   configCfg = dbConfig.database.clone();
 
   configCfg.name += "_config";
 
-  configDb = dbDriver.database(configCfg);
+  configDb = dbDriver.useDb(configCfg);
 
   dataDb.get('_all_docs?startkey=\"_design/\"&endkey=\"_design0\"&include_docs=true').then(function(data) {
     var i, len, results, row, rows;

@@ -4,20 +4,20 @@
     _id: '_design/auth',
     views: {},
     validate_doc_update: (function(newDoc, oldDoc, userCtx) {
-      var creation, deletion, isAdmin, isLogged, isMember, isUploader, update;
+      var isAdmin, isCreation, isDeletion, isLogged, isMember, isUpdate, isUploader;
       isLogged = (userCtx.name != null) && userCtx.name !== '';
       if (!isLogged) {
         throw {
           'forbidden': 'please log in.'
         };
       }
-      deletion = oldDoc.deleted || oldDoc._deleted;
-      creation = oldDoc === null;
-      update = !(creation || deletion);
+      isDeletion = oldDoc.deleted || oldDoc._deleted;
+      isCreation = oldDoc === null;
+      isUpdate = !(creation || deletion);
       isAdmin = userCtx.roles.some(function(dbAndRole) {
         var db, ref, role;
         ref = dbAndRole.split("/"), db = ref[0], role = ref[1];
-        return db === userCtx.db(role === "admin");
+        return db === userCtx.db && role === "admin";
       });
       isMember = userCtx.roles.some(function(dbAndRole) {
         var _, db, ref;
@@ -25,15 +25,19 @@
         return db === userCtx.db;
       });
       isUploader = userCtx.roles.some(function(dbAndRole) {
-        var _, db, ref;
-        ref = dbAndRole.split("/"), db = ref[0], _ = ref[1];
-        return db === userCtx.db;
+        var db, ref, role;
+        ref = dbAndRole.split("/"), db = ref[0], role = ref[1];
+        return db === userCtx.db && role === 'uploader';
       });
-      if (!Admin) {
-        throw {
-          'forbidden': "you're not a member."
-        };
+      if (isAdmin) {
+        return;
       }
+      if (isUploader && isCreation && newDoc.type === "measure") {
+        return;
+      }
+      throw {
+        'forbidden': 'not enough rights'
+      };
     }).toString()
   };
 
