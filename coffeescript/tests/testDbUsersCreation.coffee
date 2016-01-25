@@ -18,7 +18,7 @@ describe "an admin and an uploader for a db",->
 
     it "should be created", (done)->
 
-        createUsers(usersDb,dbName)
+        createUsers(usersDb,config.database.name)
         .then (users)->
             
             usersDb.get(users.filter((user)-> user.roles.contains(dbName+"/admin"))[0]._id).then (user)->
@@ -34,4 +34,6 @@ describe "an admin and an uploader for a db",->
                 user.roles.must.contain(dbName+"/uploader")
 
             done()
-           
+        .catch (err)->
+
+            done(err)
