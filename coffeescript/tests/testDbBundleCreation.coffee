@@ -13,33 +13,53 @@ dbDriver = require('../../../openbeelab-db-util/javascript/mockDriver')
 dbServer = dbDriver.connectToServer(config.database)
 Promise = require 'promise'
 
+util = require 'util'
+
 describe "create a bundled db",->
 
+    before (done)->
+        
+        dbServer.useDb("_users").create()
+        .then(done)
+        .catch (err)-> console.log(err); done(err)
+
+    after (done)->
+
+        #try
+        dbServer.deleteDb(config.database.name + "_config")
+        dbServer.deleteDb(config.database.name + "_data")
+        dbServer.deleteDb("_users")
+        done()
+        #catch err
+        #    console.log(err)
+    
     it "should work", (done)->
 
-        # console.log config.database.name
         createBundle(config,dbServer)
         .then ->
             
-            configDb = dbDriver.connectToServer(dbConfig.database).useDb(config.database.name + "_config")
-            dataDb = dbDriver.connectToServer(dbConfig.database).useDb(config.database.name + "_data")
-            usersDb = dbDriver.connectToServer(dbConfig.database).useDb("_users")
+            configDb = dbDriver.connectToServer(config.database).useDb(config.database.name + "_config")
+            dataDb = dbDriver.connectToServer(config.database).useDb(config.database.name + "_data")
+            usersDb = dbDriver.connectToServer(config.database).useDb("_users")
             
             configDb.exists().must.eventually.be.true()
-            
             dataDb.exists().must.eventually.be.true()
+            
+#            console.log util.inspect(usersDb.data,true,5,true)
+#            usersDb.get("org.couchdb.user:" + config.database.name + "_admin")
+#            .then (user)->
+#
+#                user.name.must.be(config.database.name + "_admin")
 
-            console.log "ici c bon"
-            usersDb.get("org.couchdb.user:remy").then (user)->
+#           .then ()->
+                
+#                usersDb.get("org.couchdb.user:" + config.database.name + "_uploader")
+            
+#            .then (user)->
 
-                user.name.must.be("remy")
-
-            usersDb.get("org.couchdb.user:pierre").then (user)->
-
-                user.name.must.be("pierre")
-
+#                user.name.must.be(config.database.name + "_uploader"
             done()
 
         .catch (err)->
-            # console.log err.stack
+            
             done(err)

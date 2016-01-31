@@ -25,8 +25,6 @@ module.exports = (usersDb,dbName)->
     uploaderPromise = usersDb.save dbUploader
 
     all = Promise.all [adminPromise,uploaderPromise]
-    all.then ()->
-        console.log "pouet"
+    return all.then ()->
+        
         return { admin : dbAdmin, uploader : dbUploader}
-
-    return all
