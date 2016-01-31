@@ -31,4 +31,4 @@ module.exports = (config,dbServer)->
     Promise.all(usersPromises)
     .then ->
 
-        console.log "remy and pierre created."
+        console.log "users created."

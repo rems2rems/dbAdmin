@@ -5,6 +5,7 @@ module.exports = (config,dbServer)->
     insert_beehouse = require './insert_beehouse'
     createViews = require './create_views'
     createUsers = require './create_users'
+    buildDbSecurityObject = require './buildDbSecurityObject'
     Promise = require "promise"
 
     util = require 'util'
@@ -25,10 +26,7 @@ module.exports = (config,dbServer)->
 
         console.log "data db created."
         secu = config.database.securityObject
-        for role,i in secu.admins.roles
-            secu.admins.roles[i] = dbName + "/" + role
-        for role,i in secu.members.roles
-            secu.members.roles[i] = dbName + "/" + role
+        secu = buildDbSecurityObject(secu,config.database.name)
 
         Promise.all([configDb.save(secu),dataDb.save(secu)])
 
