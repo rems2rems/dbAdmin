@@ -1,7 +1,7 @@
 require 'yamljs'
-dbDriver = require '../../db/javascript/dbUtil'
+dbDriver = require '../../db/javascript/dbDriver'
 dbConfig = require '../../config.yaml'
-db = dbDriver.database(dbConfig)
+db = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name)
 
 db.get '_design/measures/_view/incorrect?', (err,measures)=>
 

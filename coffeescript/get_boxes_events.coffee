@@ -1,5 +1,5 @@
 dbConfig = require './config'
-db = require('../../dbUtil/javascript/dbUtil').database(dbConfig.databases.local)
+db = require('../../dbDriver/javascript/dbDriver').useDb(dbConfig.databases.local)
 moment = require 'moment'
 
 measuresUrl = '_design/measures/_view/by_date?startkey=\"2014-04-07T05\"' #&endkey=\"2014-05-07T14\"' #?key="'+ dbConfig.apiary_name+'"'

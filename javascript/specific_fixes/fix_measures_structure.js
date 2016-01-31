@@ -2,11 +2,11 @@
 (function() {
   var apiary, db, dbConfig, dbDriver, measuresUrl;
 
-  dbDriver = require('../../openbeelab-db-util/javascript/dbUtil');
+  dbDriver = require('../../openbeelab-db-util/javascript/dbDriver');
 
   dbConfig = require('./config');
 
-  db = dbDriver.database(dbConfig.database);
+  db = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name);
 
   measuresUrl = "_design/measures/_view/all";
 

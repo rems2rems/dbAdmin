@@ -2,11 +2,11 @@
 (function() {
   var db, dbConfig, dbDriver, getWeekNumber, measuresUrl;
 
-  dbDriver = require('../../openbeelab-db-util/javascript/dbUtil');
+  dbDriver = require('../../openbeelab-db-util/javascript/dbDriver');
 
   dbConfig = require('./config');
 
-  db = dbDriver.database(dbConfig.databases.local);
+  db = dbDriver.connectToServer(dbConfig.database).useDb(dbConfig.database.name);
 
   getWeekNumber = require('../../util/javascript/dateUtil').getWeekNumber;
 

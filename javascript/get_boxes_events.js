@@ -4,7 +4,7 @@
 
   dbConfig = require('./config');
 
-  db = require('../../dbUtil/javascript/dbUtil').database(dbConfig.databases.local);
+  db = require('../../dbDriver/javascript/dbDriver').useDb(dbConfig.databases.local);
 
   moment = require('moment');
 

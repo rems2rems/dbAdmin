@@ -4,7 +4,7 @@
 
   dbConfig = require('./config');
 
-  db = require('../../openbeelab-db-util/javascript/dbUtil').database(dbConfig.database);
+  db = require('../../openbeelab-db-util/javascript/dbDriver').connectToServer(dbConfig.database).useDb(dbConfig.database.name);
 
   view = require("./" + process.argv[2]);
 
