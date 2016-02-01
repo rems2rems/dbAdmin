@@ -10,6 +10,13 @@
           }
         }).toString()
       },
+      delta: {
+        map: (function(doc) {
+          if (doc.type === "measure" && doc.name === "global-weight-delta") {
+            return emit(doc.beehouse_id, doc);
+          }
+        }).toString()
+      },
       weight_by_hour: {
         map: (function(doc) {
           var hourTime;

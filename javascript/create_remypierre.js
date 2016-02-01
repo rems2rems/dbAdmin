@@ -31,7 +31,7 @@
       fn(user);
     }
     return Promise.all(usersPromises).then(function() {
-      return console.log("remy and pierre created.");
+      return console.log("users created.");
     });
   };
 

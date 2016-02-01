@@ -9,6 +9,13 @@ module.exports =
                     emit doc.beehouse_id, doc
                 ).toString()
 
+        delta :
+
+            map : ((doc)-> 
+                if doc.type == "measure" and doc.name is "global-weight-delta"
+                    emit doc.beehouse_id, doc
+                ).toString()
+
         weight_by_hour :
 
             map : ((doc)-> 
