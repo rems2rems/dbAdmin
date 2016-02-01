@@ -2,23 +2,23 @@ module.exports =
     _id : '_design/beehouse'
     views :
 
-        weight :
+        'global-weight' :
 
-            map : ((doc)-> 
+            map : ((doc)->
                 if doc.type == "measure" and doc.name is "global-weight"
-                    emit doc.beehouse_id, doc
+                    emit [doc.beehouse_id,doc.timestamp], doc.value
                 ).toString()
 
-        delta :
+        'global-weight-delta' :
 
-            map : ((doc)-> 
-                if doc.type == "measure" and doc.name is "global-weight-delta"
-                    emit doc.beehouse_id, doc
+            map : ((doc)->
+                if doc.type == "measure" and doc.name is "global-weight-delta" and doc.absoluteTarget is null
+                    emit [doc.beehouse_id,doc.timestamp], doc.value
                 ).toString()
 
         weight_by_hour :
 
-            map : ((doc)-> 
+            map : ((doc)->
                 if doc.type == "measure" and doc.name is "global-weight"
                     hourTime = doc.timestamp.split(":")[0]
                     emit(hourTime, [hourTime,doc.value,1])

@@ -3,17 +3,17 @@
   module.exports = {
     _id: '_design/beehouse',
     views: {
-      weight: {
+      'global-weight': {
         map: (function(doc) {
           if (doc.type === "measure" && doc.name === "global-weight") {
-            return emit(doc.beehouse_id, doc);
+            return emit([doc.beehouse_id, doc.timestamp], doc.value);
           }
         }).toString()
       },
-      delta: {
+      'global-weight-delta': {
         map: (function(doc) {
-          if (doc.type === "measure" && doc.name === "global-weight-delta") {
-            return emit(doc.beehouse_id, doc);
+          if (doc.type === "measure" && doc.name === "global-weight-delta" && doc.absoluteTarget === null) {
+            return emit([doc.beehouse_id, doc.timestamp], doc.value);
           }
         }).toString()
       },
