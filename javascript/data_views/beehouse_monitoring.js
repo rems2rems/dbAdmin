@@ -9,6 +9,13 @@
             return emit(doc.beehouse_id, doc);
           }
         }).toString()
+      },
+      absolute_weight: {
+        map: (function(doc) {
+          if (doc.type === "measure" && doc.name === 'global-weight') {
+            return emit([doc.beehouse_id, doc.timestamp], doc);
+          }
+        }).toString()
       }
     }
   };

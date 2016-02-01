@@ -13,12 +13,12 @@ module.exports =
 
             ).toString()
         
-        absolute_data :
+        absolute_weight :
 
             map : ((doc)->
 
-                if doc.type == "measure" and (not doc.isRelative? or doc.isRelative is true)
+                if doc.type == "measure" and doc.name is 'global-weight'
 
-                    emit doc.beehouse_id, doc
+                    emit [doc.beehouse_id,doc.timestamp], doc
 
             ).toString()
