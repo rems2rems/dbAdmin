@@ -3,41 +3,45 @@
   module.exports = {
     _id: '_design/auth',
     views: {},
-    validate_doc_update: (function(newDoc, oldDoc, userCtx) {
-      var isAdmin, isCreation, isDeletion, isLogged, isMember, isUpdate, isUploader;
-      isLogged = (userCtx.name != null) && userCtx.name !== '';
-      if (!isLogged) {
-        throw {
-          'forbidden': 'please log in.'
-        };
+    validate_doc_update: (function(newDoc, oldDoc, userCtx, secObj) {
+      var dbName, hasAdminRole, hasMemberRole, isAdmin, isCreation, isDeletion, isLogged, isMember, isServerAdmin, isUpdate, isUploader, ref;
+      isServerAdmin = ((ref = userCtx.roles) != null ? ref.indexOf("_admin") : void 0) !== -1;
+      if (isServerAdmin) {
+        return;
       }
-      isDeletion = oldDoc.deleted || oldDoc._deleted;
-      isCreation = oldDoc === null;
-      isUpdate = !(creation || deletion);
-      isAdmin = userCtx.roles.some(function(dbAndRole) {
-        var db, ref, role;
-        ref = dbAndRole.split("/"), db = ref[0], role = ref[1];
-        return db === userCtx.db && role === "admin";
-      });
-      isMember = userCtx.roles.some(function(dbAndRole) {
-        var _, db, ref;
-        ref = dbAndRole.split("/"), db = ref[0], _ = ref[1];
-        return db === userCtx.db;
-      });
-      isUploader = userCtx.roles.some(function(dbAndRole) {
-        var db, ref, role;
-        ref = dbAndRole.split("/"), db = ref[0], role = ref[1];
-        return db === userCtx.db && role === 'uploader';
-      });
+      isLogged = userCtx.name !== '';
+      hasAdminRole = isLogged && (userCtx.roles.filter(function(role) {
+        return secObj.admins.roles.indexOf(role) !== -1;
+      }).length > 0);
+      isAdmin = isLogged && (secObj.admins.names.indexOf(userCtx.name) !== -1);
+      isAdmin = isAdmin || hasAdminRole;
       if (isAdmin) {
         return;
       }
-      if (isUploader && isCreation && newDoc.type === "measure") {
-        return;
+      hasMemberRole = isLogged && (userCtx.roles.filter(function(role) {
+        return secObj.members.roles.indexOf(role) !== -1;
+      }).length > 0);
+      isMember = isLogged && (secObj.members.names.indexOf(userCtx.name) !== -1);
+      isMember = isMember || hasMemberRole;
+      if (!isMember) {
+        throw {
+          'forbidden': 'you are not allowed to modify this database.'
+        };
       }
-      throw {
-        'forbidden': 'not enough rights'
-      };
+      isDeletion = newDoc.deleted || newDoc._deleted;
+      isCreation = oldDoc === null;
+      isUpdate = !(isCreation || isDeletion);
+      dbName = userCtx.db.split("_config")[0];
+      isUploader = userCtx.roles.some(function(dbAndRole) {
+        var db, ref1, role;
+        ref1 = dbAndRole.split("/"), db = ref1[0], role = ref1[1];
+        return (db === dbName) && (role === "uploader");
+      });
+      if (isUploader && !(isCreation && newDoc.type === "measure")) {
+        throw {
+          'forbidden': "you can only create measure."
+        };
+      }
     }).toString()
   };
 

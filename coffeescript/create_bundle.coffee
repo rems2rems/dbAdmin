@@ -1,3 +1,5 @@
+util = require 'util'
+
 module.exports = (config,dbServer)->
     
     insert_location = require './insert_location'
@@ -7,8 +9,6 @@ module.exports = (config,dbServer)->
     createUsers = require './create_users'
     buildDbSecurityObject = require './buildDbSecurityObject'
     Promise = require "promise"
-
-    util = require 'util'
 
     dbName = config.database.name
     
@@ -41,7 +41,11 @@ module.exports = (config,dbServer)->
         createUsers(usersDb,dbName)
 
     .then (users)->
-
+        
+        console.log "admin credentials:"
+        console.log("login:" + users.admin.name + ",password:"+users.admin.password)
+        console.log "uploader credentials:"
+        console.log("login:" + users.uploader.name + ",password:"+users.uploader.password)
         console.log "users created."
         location = config.database.configObjects.location
         insert_location(configDb,location)
@@ -68,3 +72,7 @@ module.exports = (config,dbServer)->
     .then () ->
 
         console.log "data db views created"
+    
+    .catch (err)->
+    
+        console.log("err:" + util.inspect(err,true,5,true))
