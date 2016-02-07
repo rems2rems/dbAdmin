@@ -1,4 +1,8 @@
 util = require 'util'
+bunyan = require 'bunyan'
+
+log = bunyan.createLogger({name: 'create-bundle'})
+log.info "de la merde"
 
 module.exports = (config,dbServer)->
     

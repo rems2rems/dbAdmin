@@ -21,12 +21,14 @@
       noised.locationType = "noisedGPS";
       delete location.noise;
       noisedPromise = noisedPromise.then(function() {
+        console.log("inserting noised location...");
         return db.save(noised).then(function(res) {
           return location.noisedLocation = res._id;
         });
       });
     }
     return noisedPromise.then(function() {
+      console.log("inserting location...");
       return db.save(location);
     });
   };

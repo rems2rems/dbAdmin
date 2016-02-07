@@ -17,8 +17,11 @@
           }
           promise = Promise.all(filenames.map(function(filename) {
             var view;
+            console.log("view " + filename + " creating...");
             view = require("./" + category + "_views/" + filename.split(".")[0]);
-            return db.save(view);
+            return db.save(view).then(function(res) {
+              return console.log("view " + filename + " created." + res);
+            });
           }));
           return promise.then(function(views) {
             return fulfill(views);

@@ -53,16 +53,29 @@
             name: "name",
             type: "string",
             required: true,
-            name: "location_id",
-            type: "docId",
-            required: false,
-            name: "stand_id",
-            type: "docId",
-            required: false,
+            name: "apiary",
+            properties: [
+              {
+                name: "_id",
+                type: "docId",
+                required: true,
+                name: "name",
+                type: "string",
+                required: false
+              }
+            ],
             name: "model",
             required: false,
-            type: "docId",
-            required: true,
+            properties: [
+              {
+                name: "_id",
+                type: "docId",
+                required: true,
+                name: "name",
+                type: "string",
+                required: false
+              }
+            ],
             name: "number_of_extra_boxes",
             type: "integer",
             required: false,
