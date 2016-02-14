@@ -22,11 +22,11 @@ module.exports = (db,location)->
         
         noisedPromise = noisedPromise.then ->
 
-            console.log "inserting noised location..."
+            #console.log "inserting noised location..."
             db.save(noised)
             .then (res) ->
 
                 location.noisedLocation = res._id
     noisedPromise.then ->
-        console.log "inserting location..."
+        #console.log "inserting location..."
         return db.save(location)

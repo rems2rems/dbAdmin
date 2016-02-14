@@ -29,10 +29,10 @@ module.exports = (db,category)->
 
             promise = Promise.all(filenames.map((filename)->
 
-                console.log("view " + filename + " creating...")
+                #console.log("view " + filename + " creating...")
                 view = require "./" + category + "_views/"+filename.split(".")[0]
                 return db.save(view).then (res)->
-                    console.log("view " + filename + " created." + res)
+                    #console.log("view " + filename + " created." + res)
                 )
             )
 
