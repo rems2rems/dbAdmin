@@ -3,33 +3,38 @@ module.exports =
     _id : '_design/auth'
 
     views : {}
-    validate_doc_update : ((newDoc, oldDoc, userCtx)->
-
-            isLogged = userCtx.name? and userCtx.name != ''
-
-            if not isLogged
-                throw({'forbidden': 'please log in.'})
-
-            isDeletion = oldDoc.deleted or oldDoc._deleted
-            isCreation = oldDoc is null
-            isUpdate = not (creation or deletion)
+    validate_doc_update : ((newDoc, oldDoc, userCtx,secObj)->
             
-            isAdmin = userCtx.roles.some (dbAndRole)->
-                [db,role] = dbAndRole.split("/")
-                return db is userCtx.db and role is "admin"
-            isMember = userCtx.roles.some (dbAndRole)->
-                [db,_] = dbAndRole.split("/")
-                return db is userCtx.db
-            isUploader = userCtx.roles.some (dbAndRole)->
-                [db,role] = dbAndRole.split("/")
-                return db is userCtx.db and role is 'uploader'
+            isServerAdmin = userCtx.roles?.indexOf("_admin") != -1
+            
+            if isServerAdmin
+                return
+
+            isLogged = userCtx.name != ''
+            hasAdminRole = isLogged and (userCtx.roles.filter((role)-> return secObj.admins.roles.indexOf(role) != -1).length > 0)
+            isAdmin = isLogged and (secObj.admins.names.indexOf(userCtx.name) != -1)
+            isAdmin = isAdmin or hasAdminRole
 
             if isAdmin
                 return
+            
+            hasMemberRole = isLogged and (userCtx.roles.filter((role)-> return secObj.members.roles.indexOf(role) != -1).length > 0)
+            isMember = isLogged and (secObj.members.names.indexOf(userCtx.name) != -1)
+            isMember = isMember or hasMemberRole
 
-            if isUploader and isCreation and newDoc.type is "measure"
-                return
+            if not isMember
+                throw({'forbidden': 'you are not allowed to modify this database.'})
 
-            throw({'forbidden': 'not enough rights'})
-        
+            isDeletion = newDoc.deleted or newDoc._deleted
+            isCreation = oldDoc is null
+            isUpdate = not (isCreation or isDeletion)
+            
+            dbName = userCtx.db.split("_config")[0]
+            isUploader = userCtx.roles.some (dbAndRole)->
+                [db,role] = dbAndRole.split("/")
+                return (db is dbName) and (role is "uploader")
+            
+            if isUploader and not (isCreation and newDoc.type is "measure")
+                throw({'forbidden': "you can only create measure."})
+
         ).toString()

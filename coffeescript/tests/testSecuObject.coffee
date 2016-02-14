@@ -18,6 +18,7 @@ describe "a security object", ->
         secu.admins.names[0].must.be("admin")
         secu.admins.roles.length.must.be(1)
         secu.admins.roles[0].must.be("testDb/admin")
+
         secu.members.names.length.must.be(0)
         secu.members.roles.length.must.be(2)
         secu.members.roles.must.contain("testDb/beekeeper")

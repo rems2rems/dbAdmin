@@ -1,3 +1,5 @@
+util = require 'util'
+
 module.exports = (config,dbServer)->
     
     insert_location = require './insert_location'
@@ -8,23 +10,22 @@ module.exports = (config,dbServer)->
     buildDbSecurityObject = require './buildDbSecurityObject'
     Promise = require "promise"
 
-    util = require 'util'
-
     dbName = config.database.name
     
     usersDb = dbServer.useDb("_users")
     configDb = dbServer.useDb(config.database.name + "_config")
     dataDb = dbServer.useDb(config.database.name + "_data")
     
+    logs = []
     configDb.create()
     .then ->
  
-        console.log "config db created."
+        logs.push "config db created."
         dataDb.create()
     
     .then ()->
 
-        console.log "data db created."
+        logs.push "data db created."
         secu = config.database.securityObject
         secu = buildDbSecurityObject(secu,config.database.name)
 
@@ -32,23 +33,27 @@ module.exports = (config,dbServer)->
 
     .then ()->
         
-        console.log "security object created, dbs are protected."
+        logs.push "security object created, dbs are protected."
         createViews(configDb,"config")
 
     .then ()->
 
-        console.log "config db views created."
+        logs.push "config db views created."
         createUsers(usersDb,dbName)
 
     .then (users)->
-
-        console.log "users created."
+        
+        logs.push "admin credentials:"
+        logs.push "login:" + users.admin.name + ",password:"+users.admin.password
+        logs.push "uploader credentials:"
+        logs.push "login:" + users.uploader.name + ",password:"+users.uploader.password
+        logs.push "users created."
         location = config.database.configObjects.location
         insert_location(configDb,location)
 
     .then ()->
         
-        console.log "location created."
+        logs.push "location created."
         p1 = configDb.save(config.database.configObjects.beehouse_model)
         p2 = configDb.save(config.database.configObjects.beehouse)
 
@@ -56,15 +61,19 @@ module.exports = (config,dbServer)->
 
     .then ()->
 
-        console.log "beehouse created."
+        logs.push "beehouse created."
         stand = config.database.configObjects.stand
         configDb.save stand
         
     .then () ->
 
-        console.log "stand created."
+        logs.push "stand created."
         createViews(dataDb,"data")
 
     .then () ->
 
-        console.log "data db views created"
+        logs.push "data db views created"
+        return logs
+    .catch (err)->
+    
+        console.log("err:" + util.inspect(err,true,5,true))

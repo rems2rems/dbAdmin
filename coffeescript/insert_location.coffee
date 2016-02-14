@@ -20,11 +20,13 @@ module.exports = (db,location)->
         noised.locationType = "noisedGPS"
         delete location.noise
         
-        noisedPromise = noisedPromise.then -> 
+        noisedPromise = noisedPromise.then ->
 
-            db.save(noised).then (res) ->
+            #console.log "inserting noised location..."
+            db.save(noised)
+            .then (res) ->
 
                 location.noisedLocation = res._id
-
-    noisedPromise.then -> 
+    noisedPromise.then ->
+        #console.log "inserting location..."
         return db.save(location)

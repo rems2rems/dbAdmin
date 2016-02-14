@@ -58,28 +58,18 @@ module.exports =
             type : "string"
             required : true
             ,
-            name : "apiary"
-            properties : [
-                name : "_id"
-                type : "docId"
-                required : true
-                ,
-                name : "name"
-                type : "string"
-                required :false
-            ]
+            name : "location_id"
+            type : "docId"
+            required : false
+            ,
+            name : "stand_id"
+            type : "docId"
+            required : false
             ,
             name : "model"
             required : false
-            properties : [
-                name : "_id"
-                type : "docId"
-                required : true
-                ,
-                name : "name"
-                type : "string"
-                required :false
-            ]
+            type : "docId"
+            required : true
             ,
             name : "number_of_extra_boxes"
             type : "integer"

@@ -4,28 +4,34 @@ require('../../../openbeelab-util/javascript/objectUtils').install()
 require('../../../openbeelab-util/javascript/arrayUtils').install()
 
 config = require('../config')
-#promisify_db = require '../../../openbeelab-db-util/javascript/promisify_dbDriver'
 
-dbDriver = require('../../../openbeelab-db-util/javascript/mockDriver')
+mockCouch = require('../../../mock-couch')
+
+dbDriver = require('../../../openbeelab-db-util/javascript/dbDriver')
 Promise = require 'promise'
 
-dbServer = dbDriver.connectToServer(config.database)
-usersDb = dbServer.useDb("_users")
-#dataDb = dbDriver.connectToServer(config.database).useDb(config.database.name)
 
 createUsers = require '../create_users'
 
 describe "an admin and an uploader for a db",->
+        
+    instance = null
+    dbServer = null
+    usersDb = null
 
     before (done)->
         
-        usersDb.create()
-        .then(done)
-        .catch (err)-> console.log(err); done(err)
+        instance = mockCouch.createServer()
+        instance.listen(config.database.port)
+        instance.addDB("_users")
+        
+        dbServer = dbDriver.connectToServer(config.database)
+        usersDb = dbServer.useDb("_users")
+        done()
 
     after (done)->
 
-        dbServer.deleteDb("_users")
+        instance.close()
         done()
     
     it "should be created", (done)->
